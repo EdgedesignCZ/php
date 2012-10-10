@@ -1,0 +1,17 @@
+{
+    "name": "jyxo/php",
+    "type": "library",
+    "description": "Jyxo PHP Library",
+    "keywords": ["jyxo", "library"],
+    "authors": [
+        {"name": "Jaroslav Hanslík", "email": ""},
+        {"name": "Ondřej Nešpor", "email": ""}
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "autoload": {
+        "psr-0": { "Jyxo": "" }
+    },
+    "minimum-stability": "dev"
+}
