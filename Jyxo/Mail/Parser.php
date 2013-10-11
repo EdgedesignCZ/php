@@ -464,6 +464,7 @@ class Parser
 		}
 
 		// Adds a header that the IMAP extension does not support
+        $matches = array();
 		if (preg_match("~Disposition-Notification-To:(.+?)(?=\r?\n(?:\S|\r?\n))~is", $rawHeaders, $matches)) {
 			$addressList = imap_rfc822_parse_adrlist($matches[1], '');
 			// {''} is used because of CS rules
@@ -597,7 +598,7 @@ class Parser
 				} else {
 					if ($pid == $this->defaultPid) {
 						$this->parseMultiparts($pid, $mimeType, 'top', 2, $alternative);
-					} elseif ('message/rfc822' == $this->structure['ftype'][$i]) {
+					} elseif ('message/rfc822' == $this->structure['ftype'][$key]) {
 						$this->parseMultiparts($pid, $mimeType, 'subparts', 1, $alternative);
 					}
 				}
@@ -794,8 +795,7 @@ class Parser
 							continue;
 						}
 					}
-				} elseif (('inline' == $this->structure['disposition'][$partNo])
-						&& (!$this->isPartMultipart($multipartNo, 'related')) && (!$this->isPartMultipart($multipartNo, 'mixed'))) {
+				} elseif ('inline' == $this->structure['disposition'][$partNo]) {
 					// It is inline, but not related or mixed type
 
 					if (($this->structure['ftype'][$partNo] == $mimeType) && (!isset($this->structure['fname'][$partNo]))) {
@@ -1062,7 +1062,7 @@ class Parser
 
 		$parts = array();
 		if (is_array($this->structure['ftype'])) {
-			$allExcept = array_diff($this->structure['ftype'], $types);
+			$allExcept = array_diff($this->structure['ftype'], $exceptTypes);
 			foreach (array_keys($allExcept) as $key) {
 				$parts[] = $this->structure['pid'][$key];
 			}
@@ -1116,6 +1116,7 @@ class Parser
 	 */
 	private function decodeFilename($filename)
 	{
+        $parts = array();
 		if (preg_match('~(?P<charset>[^\']+)\'(?P<lang>[^\']*)\'(?P<filename>.+)~i', $filename, $parts)) {
 			$filename = $this->convertToUtf8(rawurldecode($parts['filename']), $parts['charset']);
 		} elseif (0 === strpos($filename, '=?')) {
